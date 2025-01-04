@@ -27,9 +27,14 @@ async function run() {
     await client.connect();
 
     const menuCollecton = client.db("radhuniDB").collection("menu");
+    const reviewCollecton = client.db("radhuniDB").collection("reviews");
 
     app.get("/menu", async (req, res) => {
       const result = await menuCollecton.find().toArray();
+      res.send(result);
+    });
+    app.get("/reviews", async (req, res) => {
+      const result = await reviewCollecton.find().toArray();
       res.send(result);
     });
     // Send a ping to confirm a successful connection
