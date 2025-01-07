@@ -28,6 +28,7 @@ async function run() {
 
     const menuCollecton = client.db("radhuniDB").collection("menu");
     const reviewCollecton = client.db("radhuniDB").collection("reviews");
+    const cartCollecton = client.db("radhuniDB").collection("carts");
 
     app.get("/menu", async (req, res) => {
       const result = await menuCollecton.find().toArray();
@@ -35,6 +36,13 @@ async function run() {
     });
     app.get("/reviews", async (req, res) => {
       const result = await reviewCollecton.find().toArray();
+      res.send(result);
+    });
+
+    // cart apis
+    app.post("/carts", async (req, res) => {
+      const cartData = req.body;
+      const result = await cartCollecton.insertOne(cartData);
       res.send(result);
     });
     // Send a ping to confirm a successful connection
