@@ -40,6 +40,15 @@ async function run() {
     });
 
     // cart apis
+
+    app.get("/carts", async (req, res) => {
+      const email = req.query.email;
+      console.log(email);
+      const query = { userEmail: email };
+      const result = await cartCollecton.find(query).toArray();
+      console.log(result);
+      res.send(result);
+    });
     app.post("/carts", async (req, res) => {
       const cartData = req.body;
       const result = await cartCollecton.insertOne(cartData);
