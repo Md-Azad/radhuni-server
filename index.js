@@ -27,9 +27,18 @@ async function run() {
     await client.connect();
 
     const menuCollecton = client.db("radhuniDB").collection("menu");
+    const userCollecton = client.db("radhuniDB").collection("users");
     const reviewCollecton = client.db("radhuniDB").collection("reviews");
     const cartCollecton = client.db("radhuniDB").collection("carts");
 
+    // users api
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await userCollecton.insertOne(user);
+      res.send(result);
+    });
+
+    // menu api
     app.get("/menu", async (req, res) => {
       const result = await menuCollecton.find().toArray();
       res.send(result);
