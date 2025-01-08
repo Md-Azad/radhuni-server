@@ -32,6 +32,10 @@ async function run() {
     const cartCollecton = client.db("radhuniDB").collection("carts");
 
     // users api
+    app.get("/users", async (req, res) => {
+      const result = await userCollecton.find().toArray();
+      res.send(result);
+    });
     app.post("/users", async (req, res) => {
       const user = req.body;
       const email = user.email;
