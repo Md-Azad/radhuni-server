@@ -48,6 +48,15 @@ async function run() {
       res.send(result);
     });
 
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log("id", id);
+      const filter = { _id: new ObjectId(id) };
+      console.log(filter);
+      const result = await userCollecton.deleteOne(filter);
+      res.send(result);
+    });
+
     // menu api
     app.get("/menu", async (req, res) => {
       const result = await menuCollecton.find().toArray();
