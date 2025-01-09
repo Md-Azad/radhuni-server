@@ -48,6 +48,18 @@ async function run() {
       res.send(result);
     });
 
+    app.patch("/users/admin/:id", async (res, req) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await userCollecton.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
     app.delete("/users/:id", async (req, res) => {
       const id = req.params.id;
       console.log("id", id);
