@@ -46,7 +46,6 @@ async function run() {
         req.decoded = decoded;
         next();
       });
-      console.log(token);
     };
 
     // JWT RELATED API
@@ -63,6 +62,20 @@ async function run() {
     app.get("/users", verifytoken, async (req, res) => {
       const result = await userCollecton.find().toArray();
       res.send(result);
+    });
+
+    app.get("/users/admin/:email", verifytoken, async (req, res) => {
+      const email = req.params.email;
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: "Unauthorized access" });
+      }
+      let isAdmin = false;
+      const query = { email: email };
+      const result = await userCollecton.findOne(query);
+      if (result) {
+        isAdmin = result?.role === "admin";
+      }
+      res.send({ isAdmin });
     });
     app.post("/users", async (req, res) => {
       const user = req.body;
