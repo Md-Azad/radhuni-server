@@ -36,16 +36,28 @@ async function run() {
 
     const verifytoken = (req, res, next) => {
       if (!req.headers.authorization) {
-        return res.status(401).send({ message: "Forbidden access" });
+        return res.status(401).send({ message: "unauthorized access" });
       }
       const token = req.headers.authorization.split(" ")[1];
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
         if (err) {
-          return res.status(401).send({ message: "Forbidden access" });
+          return res.status(401).send({ message: "unauthorized access" });
         }
         req.decoded = decoded;
         next();
       });
+    };
+
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email };
+      const result = await userCollecton.findOne(query);
+      const isAdmin = result?.role === "admin";
+      console.log(isAdmin);
+      if (!isAdmin) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+      next();
     };
 
     // JWT RELATED API
@@ -59,7 +71,7 @@ async function run() {
     });
 
     // users api
-    app.get("/users", verifytoken, async (req, res) => {
+    app.get("/users", verifytoken, verifyAdmin, async (req, res) => {
       const result = await userCollecton.find().toArray();
       res.send(result);
     });
@@ -67,7 +79,7 @@ async function run() {
     app.get("/users/admin/:email", verifytoken, async (req, res) => {
       const email = req.params.email;
       if (email !== req.decoded.email) {
-        return res.status(403).send({ message: "Unauthorized access" });
+        return res.status(401).send({ message: "Forbidden access" });
       }
       let isAdmin = false;
       const query = { email: email };
