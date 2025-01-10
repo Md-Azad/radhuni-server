@@ -32,6 +32,23 @@ async function run() {
     const reviewCollecton = client.db("radhuniDB").collection("reviews");
     const cartCollecton = client.db("radhuniDB").collection("carts");
 
+    // middlewares
+
+    const verifytoken = (req, res, next) => {
+      if (!req.headers.authorization) {
+        return res.status(401).send({ message: "Forbidden access" });
+      }
+      const token = req.headers.authorization.split(" ")[1];
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+          return res.status(401).send({ message: "Forbidden access" });
+        }
+        req.decoded = decoded;
+        next();
+      });
+      console.log(token);
+    };
+
     // JWT RELATED API
 
     app.post("/jwt", async (req, res) => {
@@ -43,7 +60,7 @@ async function run() {
     });
 
     // users api
-    app.get("/users", async (req, res) => {
+    app.get("/users", verifytoken, async (req, res) => {
       const result = await userCollecton.find().toArray();
       res.send(result);
     });
