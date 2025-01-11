@@ -126,7 +126,7 @@ async function run() {
 
     // menu api
 
-    app.post("/menu", async (req, res) => {
+    app.post("/menu", verifytoken, verifyAdmin, async (req, res) => {
       const item = req.body;
       console.log("this api called", item);
       const result = await menuCollecton.insertOne(item);
