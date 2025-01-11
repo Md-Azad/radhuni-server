@@ -53,7 +53,7 @@ async function run() {
       const query = { email: email };
       const result = await userCollecton.findOne(query);
       const isAdmin = result?.role === "admin";
-      console.log(isAdmin);
+
       if (!isAdmin) {
         return res.status(403).send({ message: "forbidden access" });
       }
@@ -87,6 +87,7 @@ async function run() {
       if (result) {
         isAdmin = result?.role === "admin";
       }
+
       res.send({ isAdmin });
     });
     app.post("/users", async (req, res) => {
@@ -124,10 +125,18 @@ async function run() {
     });
 
     // menu api
+
+    app.post("/menu", async (req, res) => {
+      const item = req.body;
+      console.log("this api called", item);
+      const result = await menuCollecton.insertOne(item);
+      res.send(result);
+    });
     app.get("/menu", async (req, res) => {
       const result = await menuCollecton.find().toArray();
       res.send(result);
     });
+
     app.get("/reviews", async (req, res) => {
       const result = await reviewCollecton.find().toArray();
       res.send(result);
@@ -151,7 +160,7 @@ async function run() {
 
     app.delete("/carts/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+
       const query = { _id: new ObjectId(id) };
       const result = await cartCollecton.deleteOne(query);
       res.send(result);
