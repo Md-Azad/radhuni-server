@@ -115,7 +115,7 @@ async function run() {
       res.send(result);
     });
 
-    app.delete("/users/:id", async (req, res) => {
+    app.delete("/users/:id", verifytoken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
 
       const filter = { _id: new ObjectId(id) };
@@ -128,7 +128,7 @@ async function run() {
 
     app.post("/menu", verifytoken, verifyAdmin, async (req, res) => {
       const item = req.body;
-      console.log("this api called", item);
+
       const result = await menuCollecton.insertOne(item);
       res.send(result);
     });
@@ -138,8 +138,26 @@ async function run() {
     });
     app.get("/menu/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await menuCollecton.findOne(query);
+      const filter = { _id: new ObjectId(id) };
+      const result = await menuCollecton.findOne(filter);
+      res.send(result);
+    });
+
+    app.patch("/menu/:id", verifytoken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+
+      const filter = { _id: new ObjectId(id) };
+      const updatedItem = req.body;
+      const updatedDoc = {
+        $set: {
+          name: updatedItem.name,
+          price: updatedItem.price,
+          category: updatedItem.category,
+          recipe: updatedItem.recipe,
+        },
+      };
+
+      const result = await menuCollecton.updateOne(filter, updatedDoc);
       res.send(result);
     });
 
